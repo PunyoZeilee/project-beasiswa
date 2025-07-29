@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Hasil Pendaftaran</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/assets//css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -39,12 +39,22 @@
         $data[] = $row;
       }
 
-      // Mengurutkan array berdasarkan nama 
+      // Hitung jumlah pendaftar berdasarkan jenis beasiswa
+      $akademik = 0;
+      $nonAkademik = 0;
+      foreach ($data as $row) {
+        if (strtolower($row['beasiswa']) === 'akademik') {
+          $akademik++;
+        } else {
+          $nonAkademik++;
+        }
+      }
+
+      // Mengurutkan array berdasarkan nama
       usort($data, function($a, $b) {
         return strcmp($a['nama'], $b['nama']);
       });
 
-      // Menampilkan panjang array 
       echo "<p><strong>Jumlah Pendaftar:</strong> " . count($data) . "</p>";
       ?>
 
@@ -80,6 +90,46 @@
           </tbody>
         </table>
       </div>
+    <!-- Grafik Pie -->
+    <h4 class="mt-5 text-center">Grafik Pendaftar Berdasarkan Jenis Beasiswa</h4>
+    <div class="d-flex justify-content-center mt-4">
+      <canvas id="grafikBeasiswa" style="max-width: 300px; max-height: 300px;"></canvas>
+    </div>
+    <script>
+      const ctx = document.getElementById('grafikBeasiswa').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Akademik', 'Non-Akademik'],
+          datasets: [{
+            label: 'Jumlah Pendaftar',
+            data: [<?= $akademik ?>, <?= $nonAkademik ?>],
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.7)',
+              'rgba(255, 99, 132, 0.7)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top'
+            },
+            title: {
+              display: true,
+              text: 'Distribusi Beasiswa yang Dipilih'
+            }
+          }
+        }
+      });
+    </script>
+
 
     </div>
   </div>
